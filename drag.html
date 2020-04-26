@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <style>
+        html,
+        body {
+            height: 500%;
+            -webkit-user-select: none;
+            /*禁止用户选择页面中元素*/
+        }
+
+        .dialogMark {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        .dialogBox {
+            position: fixed;
+            z-index: 11;
+            width: 400px;
+            height: 500px;
+            background-color: #fff;
+            overflow: hidden;
+        }
+
+        .dialogBox h3 {
+            position: relative;
+            height: 60px;
+            line-height: 60px;
+            padding: 0 10px;
+            background: #ddd;
+            border-bottom: 1px solid #aaa;
+            cursor: move;
+        }
+
+        .dialogBox h3 i {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            background-color: pink;
+            line-height: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dialogMark"></div>
+
+    <div class="dialogBox">
+        <h3 class="title">秦程 <i>X</i> </h3>
+        <div class="con">
+
+        </div>
+    </div>
+
+    <script src="./js/DragPlugin.js"></script>
+    <script>
+        let dialogMark = document.querySelector(".dialogMark"),
+            dialogBox = document.querySelector(".dialogBox"),
+            title = dialogBox.querySelector(".title"),
+            close = dialogBox.querySelector("i");
+
+        let winW = document.documentElement.clientWidth,
+            winH = document.documentElement.clientHeight,
+            boxW = dialogBox.offsetWidth,
+            boxH = dialogBox.offsetHeight;
+        dialogBox.style.top = (winH - boxH) / 2 + "px";
+        dialogBox.style.left = (winW - boxW) / 2 + "px";
+        close.onclick = function () {
+            dialogMark.style.display = "none";
+            dialogBox.style.display = "none";
+        }
+        new DragPlugin(dialogBox, {
+            selector: "h3",
+            dragstart: function () {
+                this.dragTarget.style.backgroundColor = "pink"
+
+            },
+            draging: function () {
+                let minL = 0,
+                    minT = 0,
+                    maxL = winW - boxW,
+                    maxT = winH - boxH;
+                let {
+                    curL,
+                    curT
+                } = this
+
+                curL = curL < minL ? minL : (curL > maxL ? maxL : curL);
+                curT = curT < minT ? minT : (curT > maxT ? maxT : curT);
+
+                this.ele.style.left = curL + "px";
+                this.ele.style.top = curT + "px";
+            },
+            dragend: function () {
+                this.dragTarget.style.backgroundColor = "#ddd"
+            }
+        })
+
+  
+        
+
+
+    </script>
+</body>
+
+</html>

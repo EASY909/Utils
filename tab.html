@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <style>
+        .tabBox {
+            margin: 20px auto;
+            width: 360px;
+
+        }
+
+        .tabBox .option {
+            height: 34px;
+            border: 1px solid #DBDEE1;
+            background: #eee;
+        }
+
+        .tabBox .option li {
+            float: left;
+            padding: 0 12px;
+            height: 34px;
+            line-height: 34px;
+
+        }
+
+        .tabBox .option li a {
+            color: #000;
+            display: block;
+            font-size: 14px;
+        }
+
+        .tabBox .option li.active {
+            border-top: 3px solid #ff8400;
+            height: 33px;
+            line-height: 33px;
+            margin-top: -1px;
+            background-color: #fff;
+        }
+
+        .tabBox .con {
+            display: none;
+            padding-top: 10px;
+            height: 230px;
+            font-size: 14px;
+            text-align: center;
+            background-color: palevioletred;
+        }
+
+        .tabBox .con.active {
+            display: block;
+        }
+
+        .container{
+            margin: 20px auto;
+            position: relative;
+            width: 430px;
+            height: 430px;
+            border: 1px solid #000;
+            overflow: hidden;
+        }
+     
+        .container .itemBox li{
+            width: 143px;
+            height: 143px;
+            border: 1px solid transparent;
+        }
+        .container .itemBox li.active{
+            border: 1px solid red;
+        }
+        .container .itemBox li img{
+            display: block;
+            width: 143px;
+            height: 100%;   
+        }
+        .container .itemBox{
+         
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 143px;
+            height: 100%;
+            z-index: 10;
+        }
+        .container .imgBox{
+            display: none;
+        }
+        .container .imgBox.active{
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="tabBox" id="tabBox">
+        <ul class="option">
+            <li><a href="#">图片</a></li>
+            <li><a href="#">专栏</a></li>
+            <li><a href="#">热点</a></li>
+        </ul>
+        <div class="con">
+            1
+        </div>
+        <div class="con">
+            2
+        </div>
+        <div class="con">
+            3
+        </div>
+    </div>
+
+    <div class="tabBox" id="tabBox2">
+        <ul class="option">
+            <li><a href="#">图片</a></li>
+            <li><a href="#">专栏</a></li>
+            <li><a href="#">热点</a></li>
+            <li><a href="#">事实</a></li>
+        </ul>
+        <div class="con">
+            1
+        </div>
+        <div class="con">
+            2
+        </div>
+        <div class="con">
+            3
+        </div>
+        <div class="con">
+            4
+        </div>
+    </div>
+
+
+    <div class="container" id="container">
+        <div class="imgBox"><img src="images/1.jpg" alt=""></div>
+        <div class="imgBox"><img src="images/2.jpg" alt=""></div>
+        <div class="imgBox"><img src="images/3.jpg" alt=""></div>
+        <ul class="itemBox">
+            <li><img src="images/1.jpg" alt=""></li>
+            <li><img src="images/2.jpg" alt=""></li>
+            <li><img src="images/3.jpg" alt=""></li>
+        </ul>
+    </div>
+
+    <script src="./js/tabPlugin.js"></script>
+    <script>
+        new TabPlugin(tabBox, {
+            lastIndex: 2
+        })
+        new TabPlugin(tabBox2)
+        new TabPlugin(container,{
+            customPageClass:"itemBox",
+            customContentClass:"imgBox"
+        })
+    </script>
+</body>
+
+</html>

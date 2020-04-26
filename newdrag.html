@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <style>
+        #box1 {
+            width: 200px;
+            height: 200px;
+            background-color: brown;
+            position: absolute;
+
+        }
+
+        #box2 {
+            width: 200px;
+            height: 200px;
+            background-color: palevioletred;
+            position: absolute;
+
+        }
+    </style>
+</head>
+
+<body>
+    <div id="box1"></div>
+    <div id="box2"></div>
+    <!-- <script src="./js/drag.js" type="module"></script> -->
+    <script type="module">
+        import Drag from "./js/drag.js"
+        let box1 = document.getElementById("box1");   
+        box1.style.left = "100px";
+        box1.style.top = "100px";
+        let drag1 = new Drag(box1)
+        let box2 = document.getElementById("box2");   
+        box2.style.left = "0px";
+        box2.style.top = "0px";
+        let drag2 = new Drag(box2)
+
+        let change=function (curEle){
+            [].forEach.call(document.querySelectorAll("div"),item=>{
+                item.style.zIndex=0;
+            })
+            curEle.style.zIndex=1;
+           
+        }
+
+        drag1.subDown.add(change)
+        drag2.subDown.add(change)
+
+   
+
+       let computedFly= function computedFly(curEle, ev){
+            if (!curEle.lastFly) {
+                curEle.speedFly = 0;
+                curEle.lastFly = curEle.offsetLeft;
+                return;
+            }
+
+            curEle.speedFly = curEle.offsetLeft - curEle.lastFly;
+            curEle.lastFly = curEle.offsetLeft;
+        }
+
+
+        drag1.subMove.add(computedFly)
+        drag2.subMove.add(computedFly)
+
+
+        let animationFly=function animationFly(curEle, ev){
+            let minL = 0,
+                maxL = document.documentElement.clientWidth - curEle.offsetWidth;
+            let dir = "right",  
+                speed = curEle.speedFly;
+           
+            speed < 0 ? dir = "left" : null;
+            speed = Math.abs(speed)
+            curEle.flyTimer = setInterval(() => {
+                if (speed < 0.5) {
+                    clearInterval(curEle.flyTimer);
+                    return
+                }
+                speed *= 0.98;
+
+                let curL = curEle.offsetLeft;
+                if (dir == "right") {
+                    if (curL >= maxL) {
+                        curEle.style.left = maxL + "px";
+                        dir = "left";
+                        return;
+                    }
+                    curL += speed;
+                } else {
+                    if (curL <= minL) {
+                        curEle.style.left = minL + "px";
+                        dir = "right";
+                        return;
+                    }
+                    curL -= speed;
+                }
+                curEle.style.left = curL + "px"
+            }, 17)
+        }
+
+        
+
+        drag1.subUp.add(animationFly)
+        drag2.subUp.add(animationFly)
+
+
+        let animationDrop=function animationDrop(curEle, ev){
+            let  speed=9.8,
+            minT=0,
+            maxT=document.documentElement.clientHeight-curEle.offsetHeight,
+            flag=0;
+
+            curEle.dropTimer= setInterval(()=>{
+                if(flag>1){
+                    clearInterval(curEle.dropTimer);
+                    return;
+                }
+                speed+=9.8;
+                speed*=0.98;
+                let curT=curEle.offsetTop;
+                curT+=speed;    
+                if(curT>=maxT){
+                    curEle.style.top=maxT+"px"; 
+                    speed*=-1;
+                    flag++;
+                    return;
+                }
+                if(curT<=minT){
+                    curEle.style.top=minT+"px"; 
+                    speed*=-1;
+                    return;
+                }
+                curEle.style.top=curT+"px"; 
+                flag=0;
+            },17)
+        }
+        drag1.subUp.add(animationDrop)
+        drag2.subUp.add(animationDrop)
+
+
+        let stopAnimation = function stopAnimation(curEle, ev) {
+            clearInterval(curEle.flyTimer);
+            clearInterval(curEle.dropTimer);
+        }
+
+        drag1.subDown.add(stopAnimation)
+        drag2.subDown.add(stopAnimation)
+
+
+
+
+    </script>
+    <!-- <script>
+        let box = document.getElementById("box"),
+            subscribeDown = new Subscribe(),
+            subscribeMove = new Subscribe(),
+            subscribeUp = new Subscribe();
+        box.style.left = "0px";
+        box.style.top = "0px";
+        let down = function down(ev) {
+            this.startX = ev.clientX;
+            this.startY = ev.clientY;
+            this.startL = parseFloat(this.style.left);
+            this.startT = parseFloat(this.style.top);
+
+            this.DRAG_MOVE = move.bind(this);
+            this.DRAG_UP = up.bind(this);
+
+            document.addEventListener("mousemove", this.DRAG_MOVE);
+            document.addEventListener("mouseup", this.DRAG_UP);
+
+            subscribeDown.fire(this, ev);
+        }
+
+        let move = function move(ev) {
+            let {
+                startX,
+                startY,
+                startL,
+                startT
+            } = this;
+
+            let curL = ev.clientX - startX + startL;
+            let curT = ev.clientY - startY + startT;
+
+            this.style.left = curL + "px";
+            this.style.top = curT + "px";
+            subscribeMove.fire(this, ev);
+        }
+
+        let up = function up(ev) {
+            document.removeEventListener("mousemove", this.DRAG_MOVE);
+            document.removeEventListener("mouseup", this.DRAG_UP);
+
+            subscribeUp.fire(this, ev);
+        }
+
+        box.addEventListener("mousedown", down);
+
+        //移动中速度
+        subscribeMove.add((curEle, ev) => {
+            if (!curEle.lastFly) {
+                curEle.speedFly = 0;
+                curEle.lastFly = curEle.offsetLeft;
+                return;
+            }
+
+            curEle.speedFly = curEle.offsetLeft - curEle.lastFly;
+            curEle.lastFly = curEle.offsetLeft;
+        })
+        //离开时候 水平方向
+        subscribeUp.add((curEle, ev) => {
+
+            let minL = 0,
+                maxL = document.documentElement.clientWidth - curEle.offsetWidth;
+            let dir = "right",  
+                speed = curEle.speedFly;
+           
+            speed < 0 ? dir = "left" : null;
+            speed = Math.abs(speed)
+            curEle.flyTimer = setInterval(() => {
+                if (speed < 0.5) {
+                    clearInterval(curEle.flyTimer);
+                    return
+                }
+                speed *= 0.98;
+
+                let curL = curEle.offsetLeft;
+                if (dir == "right") {
+                    if (curL >= maxL) {
+                        curEle.style.left = maxL + "px";
+                        dir = "left";
+                        return;
+                    }
+                    curL += speed;
+                } else {
+                    if (curL <= minL) {
+                        curEle.style.left = minL + "px";
+                        dir = "right";
+                        return;
+                    }
+                    curL -= speed;
+                }
+                curEle.style.left = curL + "px"
+            }, 17)
+        })
+
+        subscribeDown.add((curEle, ev) => {
+            clearInterval(curEle.flyTimer);
+            clearInterval(curEle.dropTimer);
+        })
+
+        //离开时候 垂直方向
+        subscribeUp.add((curEle,ev)=>{
+            let  speed=9.8,
+            minT=0,
+            maxT=document.documentElement.clientHeight-curEle.offsetHeight,
+            flag=0;
+
+            curEle.dropTimer= setInterval(()=>{
+                if(flag>1){
+                    clearInterval(curEle.dropTimer);
+                    return;
+                }
+                speed+=9.8;
+                speed*=0.98;
+                let curT=curEle.offsetTop;
+                curT+=speed;    
+                if(curT>=maxT){
+                    curEle.style.top=maxT+"px"; 
+                    speed*=-1;
+                    flag++;
+                    return;
+                }
+                if(curT<=minT){
+                    curEle.style.top=minT+"px"; 
+                    speed*=-1;
+                    return;
+                }
+                curEle.style.top=curT+"px"; 
+                flag=0;
+            },17)
+        })
+
+    </script> -->
+</body>
+
+</html>
