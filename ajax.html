@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script src="js/ajax.js"></script>
+    <script>
+        ajax({
+            method: "post",
+            url: "json/test.json",
+            data: {
+                name: "qc",
+                age: 28
+            },
+            cache: false,
+            success: function (result, xhr) {
+                console.log(result);
+            },
+            error: function () {
+                console.log(result);
+            }
+        });
+    </script>
+</body>
+
+</html>
